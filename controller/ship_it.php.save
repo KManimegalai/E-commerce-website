@@ -1,0 +1,22 @@
+	<?php 
+	session_start();
+	include_once '../admin/model/db.php';
+//	print_r($_REQUEST);	
+
+	$con = db_connect();
+
+	$cart_result = select('*','in_cart',array('user_id' => $_SESSION['user_details']['id']),$con);
+//	echo "<pre>";
+//	print_r($cart_result);
+//	echo "</pre>";
+
+	foreach ($cart_result as $value) {
+		insert('purchase_details',$value ,$con);
+		$mail_content = $mail_content.$value[product_name].'-'.$value[product_quantity].',';
+	}
+	
+//	echo $mail_content;
+	$sql = "DELETE FROM `in_cart` WHERE `user_id` = ".$_SESSION['user_details']['id'];
+	execute_query($sql,$con);
+	header('Loation: ../index.php');
+ ?>
